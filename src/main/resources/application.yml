@@ -1,0 +1,82 @@
+##############################################
+# MetricCollector Application Configuration
+##############################################
+
+metric-collector:
+  jmx:
+    targets:
+      - name: local
+        url: local    # "local" = platform MBeanServer; otherwise use full JMX service URL
+        # username:
+        # password:
+      # - name: remote-app
+      #   url: service:jmx:rmi:///jndi/rmi://remotehost:9999/jmxrmi
+      #   username: admin
+      #   password: secret
+
+    mbeans:
+      - "java.lang:type=Memory"
+      - "java.lang:type=Threading"
+      - "java.lang:type=OperatingSystem"
+      - "java.lang:type=GarbageCollector,*"
+      - "java.lang:type=ClassLoading"
+
+    collection-interval-ms: 15000
+
+  export:
+    log-directory: ./logs/metrics
+    formats:
+      prometheus:
+        enabled: true
+        file: prometheus-metrics.log
+      zabbix:
+        enabled: true
+        file: zabbix-metrics.log
+        hostname: metric-collector-host
+      dynatrace:
+        enabled: true
+        file: dynatrace-metrics.log
+        prefix: "custom.jmx"
+
+  tcp:
+    enabled: true
+    host: 0.0.0.0
+    port: 9090
+
+  security:
+    api-key: "mc-api-key-change-me-in-production"
+    rsocket-token: "mc-rsocket-token-change-me-in-production"
+    tcp-token: "mc-tcp-token-change-me-in-production"
+
+# ---- Spring Configuration ----
+
+spring:
+  application:
+    name: metric-collector
+
+  rsocket:
+    server:
+      port: 7001
+      transport: tcp
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+server:
+  port: 8443
+  ssl:
+    enabled: false
+    # Uncomment and configure for mTLS:
+    # key-store: classpath:keystore.p12
+    # key-store-password: changeit
+    # key-store-type: PKCS12
+    # client-auth: need
+    # trust-store: classpath:truststore.p12
+    # trust-store-password: changeit
+
+logging:
+  level:
+    com.metriccollector: INFO
+    org.springframework.security: WARN
