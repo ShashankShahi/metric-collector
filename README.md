@@ -155,3 +155,19 @@ To run the application locally:
 ./gradlew bootRun
 ```
 *(Or run the generated jar: `java -jar build/libs/metric-collector-1.0.0-SNAPSHOT.jar`)*
+
+---
+
+## Testing & Code Coverage
+
+The project is configured with a strict testing requirement using the **JaCoCo** plugin.
+- The build pipeline enforces a **minimum 95% instruction and branch coverage**.
+- If test coverage falls below this threshold, the build will fail.
+
+To run tests and generate a coverage report:
+```bash
+./gradlew check jacocoTestReport
+```
+
+The interactive HTML coverage report will be available at:
+`build/reports/jacoco/test/html/index.html`
